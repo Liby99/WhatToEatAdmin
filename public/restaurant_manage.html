@@ -65,7 +65,7 @@
             load: function (callback) {
                 var Restaurant = Parse.Object.extend("Restaurant", {
                     render: function (id) {
-                        return "<tr class=\"restaurant\" id=\"" + this.get("objectId") + "\">"
+                        return "<tr class=\"restaurant\" id=\"" + this.id + "\">"
                             + "<td>" + id + "</td>"
                             + "<td>" + this.get("name") + "</td>"
                             + "<td>" + this.get("nickname") + "</td>"
@@ -80,11 +80,11 @@
                         + "</tr>";
                     }
                 });
-                var restaurant = new Restaurant();
-                restaurant.fetch({
+                var queryObject = new Parse.Query(Restaurant);
+                queryObject.find({
                     success: function (restaurants) {
                         var html = "";
-                        for (var i = 0; i < restaurants; i++) {
+                        for (var i = 0; i < restaurants.length; i++) {
                             html += restaurants[i].render(i);
                         }
                         $("#restaurant-table").append(html);

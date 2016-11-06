@@ -149,8 +149,8 @@
             renderRestaurant: function (restaurant) {
                 var fields = ["name", "category", "nickname", "address", "yelp", "phone"];
                 for (var i in fields) {
-                    alert(restaurant.get(i));
-                    $("#restaurant-" + i).val(restaurant.get(i));
+                    var value = restaurant.get(fields[i]);
+                    $("#restaurant-" + fields[i]).val(value);
                 }
             },
             newRestaurant: function () {
