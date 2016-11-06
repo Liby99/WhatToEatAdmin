@@ -52,12 +52,21 @@
             initiateDelete: function () {
                 $(".restaurant-delete").click(function () {
                     var id = $(this).parent().parent().attr("id");
-                    ajax({
-                        url: "/ajax/handler?action=delete",
-                        type: "post",
-                        data: { id: id },
-                        success: function (data) {
-                            window.location.reload();
+                    var Restaurant = Parse.Object.extend("Restaurant");
+                    var queryObject = new Parse.Query(Restaurant);
+                    queryObject.get(id, {
+                        success: function (restaurant) {
+                            restaurant.destroy({
+                                success: function (restaurant) {
+                                    window.location.reload();
+                                },
+                                error: function () {
+                                    alert("Delete restaurant failed");
+                                }
+                            });
+                        },
+                        error: function (error) {
+                            alert("Error: " + JSON.stringify(error));
                         }
                     })
                 });
