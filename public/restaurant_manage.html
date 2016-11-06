@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>What To Eat - Admin Manage Project</title>
+        <link rel="stylesheet" href="css/lib/font-awesome.css" />
+        <link rel="stylesheet" href="css/basic.css" />
+        <script src="js/lib/jquery.js"></script>
+        <script src="http://www.parsecdn.com/js/parse-1.6.14.min.js"></script>
+        <script>const PAGE = "manage-restaurant"</script>
+    </head>
+    <body>
+        <nav>
+            <% include view/sidebar.html %>
+        </nav>
+        <main>
+            <div id="main-title">Manage Restaurant</div>
+            <div id="main-frame">
+                <table id="restaurant-table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Nickname</th>
+                        <th>Yelp</th>
+                        <th>Phone</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </table>
+            </div>
+        </main>
+    </body>
+    <script src="js/basic.js"></script>
+    <script>
+        $(function () {
+            RestaurantManage.initiate();
+        });
+        
+        var RestaurantManage = {
+            initiate: function () {
+                var self = this;
+                this.load(function () {
+                    self.initiateEdit();
+                    self.initiateDelete();
+                });
+            },
+            initiateEdit: function () {
+                $(".restaurant-edit").click(function () {
+                    var id = $(this).parent().parent().attr("id");
+                    window.location.href = "restaurant_edit.html?r=" + id;
+                });
+            },
+            initiateDelete: function () {
+                $(".restaurant-delete").click(function () {
+                    var id = $(this).parent().parent().attr("id");
+                    ajax({
+                        url: "/ajax/handler?action=delete",
+                        type: "post",
+                        data: { id: id },
+                        success: function (data) {
+                            window.location.reload();
+                        }
+                    })
+                });
+            },
+            load: function (callback) {
+                var Restaurant = Parse.Object.extend("Restaurant", {
+                    render: function (id) {
+                        return "<tr class=\"restaurant\" id=\"" + this.get("objectId") + "\">"
+                            + "<td>" + id + "</td>"
+                            + "<td>" + this.get("name") + "</td>"
+                            + "<td>" + this.get("nickname") + "</td>"
+                            + "<td>" + this.get("yelp") + "</td>"
+                            + "<td>" + this.get("phone") + "</td>"
+                            + "<td>"
+                                + "<button class=\"restaurant-edit small\">Edit</button>"
+                            + "</td>"
+                            + "<td>"
+                                + "<button class=\"restaurant-delete small\">Delete</button>"
+                            + "</td>"
+                        + "</tr>";
+                    }
+                });
+                var restaurant = new Restaurant();
+                restaurant.fetch({
+                    success: function (restaurants) {
+                        var html = "";
+                        for (var i = 0; i < restaurants; i++) {
+                            html += restaurants[i].render(i);
+                        }
+                        $("#restaurant-table").append(html);
+                        callback();
+                    },
+                    error: function (error) {
+                        alert("Error: " + JSON.stringify(error));
+                    }
+                })
+            }
+        }
+    </script>
+</html>

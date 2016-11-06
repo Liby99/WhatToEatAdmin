@@ -1,0 +1,18 @@
+{
+    "name": "What to Eat - Admin",
+    "port": 8192,
+    "default_page": "index.html",
+    "error_page": "error.html",
+    "404_message": "Page Not Found",
+    "500_message": "Server Internal Error",
+    "static_field": [
+        "/css",
+        "/fonts",
+        "/img",
+        "/js",
+        "/src",
+        "/view"
+    ],
+    "parse_address": "http://ucsdcssa.org:1337/parse",
+    "parse_app_id": "CSSA Parse Server"
+}

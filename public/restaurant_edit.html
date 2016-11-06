@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>What To Eat - Admin Edit Project</title>
+        <link rel="stylesheet" href="css/lib/font-awesome.css" />
+        <link rel="stylesheet" href="css/lib/bootstrap.css" />
+        <link rel="stylesheet" href="css/lib/summernote_liby.css" />
+        <link rel="stylesheet" href="css/lib/datetimepicker.css" />
+        <link rel="stylesheet" href="css/basic.css" />
+        <script src="js/lib/jquery.js"></script>
+        <script src="http://www.parsecdn.com/js/parse-1.6.14.min.js"></script>
+        <script src="js/lib/bootstrap.js"></script>
+        <script src="js/lib/datetimepicker.js"></script>
+        <script src="js/lib/summernote.js"></script>
+        <script src="js/util.js"></script>
+        <script>const PAGE = "edit-restaurant"</script>
+    </head>
+    <body>
+        <nav>
+            <% include view/sidebar.html %>
+        </nav>
+        <main>
+            <div id="main-title">New Project</div>
+            <div id="main-frame">
+                <form id="restaurant-edit-form">
+                    <label>Name: </label>
+                    <input id="restaurant-name" type="text" placeholder="Restaurant Name" />
+                    <label>Category: </label>
+                    <input id="restaurant-category" type="text" placeholder="Restaurant Category" />
+                    <label>Address: </label>
+                    <input id="restaurant-address" type="text" placeholder="Restaurant Address" />
+                    <label>Nickname: </label>
+                    <input id="restaurant-nickname" type="text" placeholder="Restaurant Nickname" />
+                    <label>Yelp: </label>
+                    <input id="restaurant-yelp" type="text" placeholder="Restaurant Yelp" />
+                    <label>Phone: </label>
+                    <input id="restaurant-phone" type="text" placeholder="Restaurant Phone" />
+                    <label>Cover Image: </label>
+                    <div id="restaurant-icon">
+                        <!-- restaurant icon summernote -->
+                    </div>
+                    <button type="reset">Reset</button>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </main>
+    </body>
+    <script src="js/basic.js"></script>
+    <script>
+        $(document).ready(function () {
+            RestaurantEdit.initiate();
+        });
+        
+        var RestaurantEdit = {
+            id: undefined,
+            coverOption: {
+                height: 100,
+                toolbar: [['insert', ['picture']]],
+                popover: {
+                    image: [
+                        ['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
+                        ['float', ['floatLeft', 'floatRight', 'floatNone']],
+                        ['remove', ['removeMedia']]
+                    ],
+                    air: [
+                        ['insert', ['picture']]
+                    ]
+                }
+            },
+            initiate: function () {
+                this.initiateSubmit();
+                this.checkParams();
+            },
+            initiateSubmit: function () {
+                var self = this;
+                $("#restaurant-edit-form").submit(function () {
+                    var data = {
+                        "name": $("#restaurant-name").val(),
+                        "category": $("#restaurant-category").val(),
+                        "address": $("#restaurant-address").val(),
+                        "nickname": $("#restaurant-nickname").val(),
+                        "yelp": $("#restaurant-yelp").val(),
+                        "phone": $("#restaurant-phone").val()
+                    };
+                    var Restaurant = Parse.Object.extend("Restaurant");
+                    if (self.id) {
+                        var query = new Parse.Query(Restaurant);
+                        query.get(self.id, {
+                            success: function (restaurant) {
+                                for (var i in data) {
+                                    restaurant.set(i, data[i]);
+                                }
+                                restaurant.save(null, {
+                                    success: function (result) {
+                                        alert("Update Success!");
+                                        window.location.href = "restaurant_manage.html";
+                                    },
+                                    error: function (result, error) {
+                                        alert("Update Failed: " + JSON.stringify(error));
+                                    }
+                                })
+                            },
+                            error: function (restaurant, error) {
+                                alert("Cannot Find Restaurant " + self.id + ": " + JSON.stringify(error));
+                            }
+                        })
+                    }
+                    else {
+                        var restaurant = new Restaurant();
+                        restaurant.save(data, {
+                            success: function(object) {
+                                alert("Submission Success!");
+                                window.location.href = "restaurant_manage.html";
+                            },
+                            error: function (restaurant, error) {
+                                alert("Submission Failed: " + JSON.stringify(error));
+                            }
+                        });
+                    }
+                    return false;
+                });
+            },
+            checkParams: function () {
+                var self = this;
+                var params = Utility.getQueryParams();
+                if (params["r"] && params["r"] != "") {
+                    this.id = params["r"];
+                    this.getRestaurantData(params["r"], function (restaurant) {
+                        self.renderRestaurant(restaurant);
+                    });
+                }
+                else {
+                    this.newRestaurant();
+                }
+            },
+            getRestaurantData: function (objectId, callback) {
+                var Restaurant = Parse.Object.extend("Restaurant");
+                var query = new Parse.Query(Restaurant);
+                query.get(objectId, {
+                    success: function (restaurant) {
+                        callback(restaurant);
+                    },
+                    error: function (restaurant, error) {
+                        alert("Cannot Get the Restaurant " + objectId + ": " + JSON.stringify(error));
+                        window.location.href = "restaurant_manage.html";
+                    }
+                })
+            },
+            renderRestaurant: function (restaurant) {
+                var fields = ["name", "category", "nickname", "address", "yelp", "phone"];
+                for (var i in fields) {
+                    alert(restaurant.get(i));
+                    $("#restaurant-" + i).val(restaurant.get(i));
+                }
+            },
+            newRestaurant: function () {
+                // $("#restaurant-icon").summernote(this.coverOption);
+            }
+        }
+    </script>
+</html>
