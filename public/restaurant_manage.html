@@ -18,12 +18,14 @@
                 <table id="restaurant-table">
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Nickname</th>
+                        <th>名称</th>
+                        <th>昵称</th>
                         <th>Yelp</th>
-                        <th>Phone</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th>电话</th>
+                        <th>合作商家</th>
+                        <th>优惠信息</th>
+                        <th>编辑</th>
+                        <th>删除</th>
                     </tr>
                 </table>
             </div>
@@ -42,6 +44,9 @@
                     self.initiateEdit();
                     self.initiateDelete();
                 });
+            },
+            initiateCollaborate: function () {
+                
             },
             initiateEdit: function () {
                 $(".restaurant-edit").click(function () {
@@ -80,6 +85,8 @@
                             + "<td>" + this.get("nickname") + "</td>"
                             + "<td><a href=\"" + this.get("yelp") + "\">" + this.get("yelp") + "</a></td>"
                             + "<td>" + this.get("phone") + "</td>"
+                            + "<td>" + (this.get("is_collaborate") == 1 ? "是" : "否") + "</td>"
+                            + "<td>" + (this.has("voucher") && this.get("voucher") != "" ? "有" : "无") + "</td>"
                             + "<td>"
                                 + "<button class=\"restaurant-edit small\">Edit</button>"
                             + "</td>"
