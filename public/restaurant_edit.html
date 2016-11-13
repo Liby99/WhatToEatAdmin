@@ -46,8 +46,6 @@
                     <h3>Restaurant Information</h3>
                     <label>Name: </label>
                     <input id="restaurant-name" type="text" placeholder="Restaurant Name" />
-                    <label>Category: </label>
-                    <input id="restaurant-category" type="text" placeholder="Restaurant Category" />
                     <label>Address: </label>
                     <input id="restaurant-address" type="text" placeholder="Restaurant Address" />
                     <label>Nickname: </label>
@@ -142,12 +140,19 @@
                 $("#restaurant-edit-form").submit(function () {
                     var data = {
                         "name": $("#restaurant-name").val(),
-                        "category": $("#restaurant-category").val(),
                         "address": $("#restaurant-address").val(),
                         "nickname": $("#restaurant-nickname").val(),
                         "yelp": $("#restaurant-yelp").val(),
                         "phone": $("#restaurant-phone").val()
                     };
+                    
+                    for (var i in data) {
+                        if (data[i] == "") {
+                            alert("Please Insert Restaurant" + i);
+                            return false;
+                        }
+                    }
+                    
                     var Restaurant = Parse.Object.extend("Restaurant");
                     if (self.id) {
                         var query = new Parse.Query(Restaurant);
@@ -242,29 +247,37 @@
                 }
                 $("#restaurant-image-preview").attr("src", restaurant.get("image")._url);
                 
-                var relation = restaurant.relation("Category");
-                var query = relation.query();
-                query.find({
-                    success: function (relations) {
-                        for (var i = 0; i < relations.length; i++) {
-                            $("#restaurant-category-add").before("<tr id=\"" + relations[i].id + "\">"
-                                  + "<td>" + (i + 1) + "</td>"
-                                  + "<td>" + relations[i].get("name") + "</td>"
-                                  + "<td>"
-                                      + "<button class=\"delete-category small\">Delete</button>"
-                                  + "</td>"
-                             + "</tr>");
-                        }
-                        
-                        self.initiateDelete(restaurant);
-                    },
-                    error: function (error) {
-                        var i = 0;
-                    }
+                this.initiateRelations(restaurant, function () {
+                    self.initiateDelete(restaurant);
                 });
             },
             newRestaurant: function () {
                 // $("#restaurant-icon").summernote(this.coverOption);
+            },
+            initiateRelations: function (restaurant, callback) {
+                var relation = restaurant.relation("Category", {
+                    render: function (id) {
+                        return "<tr id=\"" + this.id + "\">"
+                                  + "<td>" + id + "</td>"
+                                  + "<td>" + this.get("name") + "</td>"
+                                  + "<td>"
+                                      + "<button class=\"delete-category small\">Delete</button>"
+                                  + "</td>"
+                             + "</tr>"
+                    }
+                });
+                var query = relation.query();
+                query.find({
+                    success: function (relations) {
+                        for (var i = 0; i < relations.length; i++) {
+                            $("#restaurant-category-add").before(relations[i].render(i + 1));
+                        }
+                        callback();
+                    },
+                    error: function (error) {
+                        alert("Database Error");
+                    }
+                });
             },
             initiateDelete: function (restaurant) {
                 var self = this;
