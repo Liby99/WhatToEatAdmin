@@ -13,148 +13,169 @@
         <script src="js/lib/datetimepicker.js"></script>
         <script src="js/lib/summernote.js"></script>
         <script src="js/util.js"></script>
-        <script>const PAGE = "edit-restaurant"</script>
+        <script>const PAGE = "manage-category"</script>
+        <style>
+            #editing {
+                margin: 0;
+                line-height: 20px;
+                width: auto;
+                display: inline-block;
+            }
+            
+            #add-category {
+                margin: 0;
+                line-height: 20px;
+                width: auto;
+                display: inline-block;
+            }
+            
+            .category-edit {
+                margin-left: 10px;
+            }
+        </style>
     </head>
     <body>
         <nav>
             <% include view/sidebar.html %>
         </nav>
         <main>
-            <div id="main-title">New Restaurant</div>
+            <div id="main-title">Manage Category</div>
             <div id="main-frame">
-                <form id="restaurant-edit-form">
-                    <label>Name: </label>
-                    <input id="restaurant-name" type="text" placeholder="Restaurant Name" />
-                    <label>Category: </label>
-                    <input id="restaurant-category" type="text" placeholder="Restaurant Category" />
-                    <label>Address: </label>
-                    <input id="restaurant-address" type="text" placeholder="Restaurant Address" />
-                    <label>Nickname: </label>
-                    <input id="restaurant-nickname" type="text" placeholder="Restaurant Nickname" />
-                    <label>Yelp: </label>
-                    <input id="restaurant-yelp" type="text" placeholder="Restaurant Yelp" />
-                    <label>Phone: </label>
-                    <input id="restaurant-phone" type="text" placeholder="Restaurant Phone" />
-                    <label>Cover Image: </label>
-                    <div id="restaurant-icon">
-                        <!-- restaurant icon summernote -->
-                    </div>
-                    <button type="reset">Reset</button>
-                    <button type="submit">Submit</button>
-                </form>
+                <table id="category-table">
+                    <tr id="category-table-head">
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Delete</th>
+                    </tr>
+                    <tr id="category-table-add">
+                        <td></td>
+                        <td>
+                            <form id="category-add-form">
+                                <input type="text" id="add-category" placeholder="Add Category" />
+                                <button type="submit" class="small">Add</button>
+                            </form>
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
             </div>
         </main>
     </body>
     <script src="js/basic.js"></script>
     <script>
         $(document).ready(function () {
-            RestaurantEdit.initiate();
+            CategoryManage.initiate();
         });
         
-        var RestaurantEdit = {
-            id: undefined,
-            coverOption: {
-                height: 100,
-                toolbar: [['insert', ['picture']]],
-                popover: {
-                    image: [
-                        ['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
-                        ['float', ['floatLeft', 'floatRight', 'floatNone']],
-                        ['remove', ['removeMedia']]
-                    ],
-                    air: [
-                        ['insert', ['picture']]
-                    ]
-                }
-            },
+        var CategoryManage = {
             initiate: function () {
-                this.initiateSubmit();
-                this.checkParams();
-            },
-            initiateSubmit: function () {
                 var self = this;
-                $("#restaurant-edit-form").submit(function () {
-                    var data = {
-                        "name": $("#restaurant-name").val(),
-                        "category": $("#restaurant-category").val(),
-                        "address": $("#restaurant-address").val(),
-                        "nickname": $("#restaurant-nickname").val(),
-                        "yelp": $("#restaurant-yelp").val(),
-                        "phone": $("#restaurant-phone").val()
-                    };
-                    var Restaurant = Parse.Object.extend("Restaurant");
-                    if (self.id) {
-                        var query = new Parse.Query(Restaurant);
-                        query.get(self.id, {
-                            success: function (restaurant) {
-                                for (var i in data) {
-                                    restaurant.set(i, data[i]);
-                                }
-                                restaurant.save(null, {
-                                    success: function (result) {
-                                        alert("Update Success!");
-                                        window.location.href = "restaurant_manage.html";
-                                    },
-                                    error: function (result, error) {
-                                        alert("Update Failed: " + JSON.stringify(error));
-                                    }
-                                })
-                            },
-                            error: function (restaurant, error) {
-                                alert("Cannot Find Restaurant " + self.id + ": " + JSON.stringify(error));
-                            }
-                        })
-                    }
-                    else {
-                        var restaurant = new Restaurant();
-                        restaurant.save(data, {
-                            success: function(object) {
-                                alert("Submission Success!");
-                                window.location.href = "restaurant_manage.html";
-                            },
-                            error: function (restaurant, error) {
-                                alert("Submission Failed: " + JSON.stringify(error));
-                            }
-                        });
-                    }
-                    return false;
+                self.initiateAdd();
+                this.load(function () {
+                    self.initiateEdit();
+                    self.initiateDelete();
                 });
             },
-            checkParams: function () {
-                var self = this;
-                var params = Utility.getQueryParams();
-                if (params["r"] && params["r"] != "") {
-                    this.id = params["r"];
-                    this.getRestaurantData(params["r"], function (restaurant) {
-                        self.renderRestaurant(restaurant);
+            initiateEdit: function () {
+                $(".editable").click(function () {
+                    var editable = this;
+                    var val = $(this).text();
+                    var id = $(this).parent().parent().attr("id");
+                    $(this).attr("hidden", "hidden");
+                    $(this).parent().append("<form id=\"" + id + "-name-form\"><input id=\"editing\" /><button class=\"category-edit small\" type=\"submit\">Submit</button></form>");
+                    $(editing).val(val);
+                    $("#" + id + "-name-form").submit(function () {
+                        var form = this;
+                        var Category = Parse.Object.extend("Category");
+                        var queryObject = new Parse.Query(Category);
+                        queryObject.get(id, {
+                            success: function (category) {
+                                var newValue = $("#editing").val();
+                                if (newValue != "") {
+                                    category.set("name", newValue);
+                                    category.save();
+                                    $(form).remove();
+                                    $(editable).text(newValue);
+                                    $(editable).removeAttr("hidden");
+                                }
+                            },
+                            error: function (error) {
+                                alert("Submission Failed");
+                            }
+                        });
+                        return false;
                     });
-                }
-                else {
-                    this.newRestaurant();
-                }
+                });
             },
-            getRestaurantData: function (objectId, callback) {
-                var Restaurant = Parse.Object.extend("Restaurant");
-                var query = new Parse.Query(Restaurant);
-                query.get(objectId, {
-                    success: function (restaurant) {
-                        callback(restaurant);
-                    },
-                    error: function (restaurant, error) {
-                        alert("Cannot Get the Restaurant " + objectId + ": " + JSON.stringify(error));
-                        window.location.href = "restaurant_manage.html";
-                    }
+            initiateDelete: function () {
+                $(".category-delete").click(function () {
+                    var id = $(this).parent().parent().attr("id");
+                    var Category = Parse.Object.extend("Category");
+                    var queryObject = new Parse.Query(Category);
+                    queryObject.get(id, {
+                        success: function (category) {
+                            category.destroy({
+                                success: function (category) {
+                                    window.location.reload();
+                                },
+                                error: function () {
+                                    alert("Delete category failed");
+                                }
+                            });
+                        },
+                        error: function (error) {
+                            alert("Error: " + JSON.stringify(error));
+                        }
+                    })
+                });
+            },
+            initiateAdd: function () {
+                $("#category-add-form").submit(function () {
+                    var val = $("#add-category").val();
+                    var Category = Parse.Object.extend("Category");
+                    var category = new Category();
+                    category.save({
+                        "name": val
+                    }, {
+                        success: function (category) {
+                            alert("Successfully Added Category");
+                            window.location.reload();
+                        },
+                        error: function (error) {
+                            alert("Add Category Failed");
+                        }
+                    });
+                    return false;
                 })
             },
-            renderRestaurant: function (restaurant) {
-                var fields = ["name", "category", "nickname", "address", "yelp", "phone"];
-                for (var i in fields) {
-                    var value = restaurant.get(fields[i]);
-                    $("#restaurant-" + fields[i]).val(value);
-                }
-            },
-            newRestaurant: function () {
-                // $("#restaurant-icon").summernote(this.coverOption);
+            load: function (callback) {
+                var Category = Parse.Object.extend("Category", {
+                    render: function (id) {
+                        return "<tr class=\"category\" id=\"" + this.id + "\">"
+                            + "<td>" + (id + 1) + "</td>"
+                            + "<td>"
+                                + "<span class=\"editable\">" + this.get("name") + "</span>"
+                            + "</td>"
+                            + "<td>"
+                                + "<button class=\"category-delete small\">Delete</button>"
+                            + "</td>"
+                        + "</tr>";
+                    }
+                });
+                var queryObject = new Parse.Query(Category);
+                queryObject.find({
+                    success: function (categories) {
+                        var html = "";
+                        for (var i = 0; i < categories.length; i++) {
+                            html += categories[i].render(i);
+                        }
+                        $("#category-table-add").before(html);
+                        callback();
+                    },
+                    error: function (error) {
+                        alert("Error: " + JSON.stringify(error));
+                    }
+                })
             }
         }
     </script>

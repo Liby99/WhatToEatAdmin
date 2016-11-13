@@ -9,15 +9,29 @@
         <link rel="stylesheet" href="css/basic.css" />
         <script src="js/lib/jquery.js"></script>
         <script src="http://www.parsecdn.com/js/parse-1.6.14.min.js"></script>
-        <script src="js/lib/bootstrap.js"></script>
-        <script src="js/lib/datetimepicker.js"></script>
-        <script src="js/lib/summernote.js"></script>
         <script src="js/util.js"></script>
         <script>const PAGE = "edit-restaurant"</script>
         <style>
             #restaurant-image-preview {
                 width: 160px;
                 height: 160px;
+            }
+            
+            #add-category-div {
+                border-top: 1px solid rgba(230, 230, 230, 1);
+                margin-top: 50px;
+                padding-top: 50px;
+            }
+            
+            #add-category {
+                margin: 0;
+                line-height: 20px;
+                width: auto;
+                display: inline-block;
+            }
+            
+            .category-submit {
+                margin-left: 10px;
             }
         </style>
     </head>
@@ -29,6 +43,7 @@
             <div id="main-title">New Restaurant</div>
             <div id="main-frame">
                 <form id="restaurant-edit-form">
+                    <h3>Restaurant Information</h3>
                     <label>Name: </label>
                     <input id="restaurant-name" type="text" placeholder="Restaurant Name" />
                     <label>Category: </label>
@@ -47,6 +62,28 @@
                     <button type="reset">Reset</button>
                     <button type="submit">Submit</button>
                 </form>
+                
+                <div id="add-category-div" hidden="hidden">
+                    <h3>Category Relation</h3>
+                    <table id="restaurant-category-table">
+                        <tr id="restaurant-category-table-head">
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Delete</th>
+                        </tr>
+                        <!-- Categories Goes Here -->
+                        <tr id="restaurant-category-add">
+                            <td></td>
+                            <td>
+                                <form id="add-category-form">
+                                    <input type="text" id="add-category" placeholder="Add Category" />
+                                    <button type="submit" class="small">Add</button>
+                                </form>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </form>
             </div>
         </main>
     </body>
@@ -60,7 +97,45 @@
             id: undefined,
             initiate: function () {
                 this.initiateSubmit();
+                this.initiateAddCategory();
                 this.checkParams();
+            },
+            initiateAddCategory: function () {
+                var self = this;
+                $("#add-category-form").submit(function () {
+                    var val = $("#add-category").val();
+                    var Category = Parse.Object.extend("Category");
+                    var query = new Parse.Query(Category);
+                    query.matches("name", val);
+                    query.find({
+                        success: function (categories) {
+                            if (categories.length > 0) {
+                                var Restaurant = Parse.Object.extend("Restaurant");
+                                var query = new Parse.Query(Restaurant);
+                                query.get(self.id, {
+                                    success: function (restaurant) {
+                                        var relation = restaurant.relation('Category');
+                                        relation.add(categories[0]);
+                                        restaurant.save();
+                                        alert("Successfully Created Relation");
+                                        window.location.reload();
+                                    },
+                                    error: function (error) {
+                                        alert("Create Relation Failed");
+                                    }
+                                });
+                            }
+                            else {
+                                alert("No Such Category");
+                            }
+                        },
+                        error: function (error) {
+                            var i = -1;
+                        }
+                    })
+                    
+                    return false;
+                })
             },
             initiateSubmit: function () {
                 var self = this;
@@ -100,6 +175,10 @@
                                                 alert("Image upload failed" + error);
                                             });
                                         }
+                                        else {
+                                            alert("Upload success!");
+                                            window.location.reload();
+                                        }
                                     },
                                     error: function (result, error) {
                                         alert("Update Failed: " + JSON.stringify(error));
@@ -134,6 +213,7 @@
                     this.getRestaurantData(params["r"], function (restaurant) {
                         self.renderRestaurant(restaurant);
                     });
+                    $("#add-category-div").removeAttr("hidden");
                 }
                 else {
                     this.newRestaurant();
@@ -153,15 +233,58 @@
                 })
             },
             renderRestaurant: function (restaurant) {
+                var self = this;
+                
                 var fields = ["name", "category", "nickname", "address", "yelp", "phone"];
                 for (var i in fields) {
                     var value = restaurant.get(fields[i]);
                     $("#restaurant-" + fields[i]).val(value);
                 }
                 $("#restaurant-image-preview").attr("src", restaurant.get("image")._url);
+                
+                var relation = restaurant.relation("Category");
+                var query = relation.query();
+                query.find({
+                    success: function (relations) {
+                        for (var i = 0; i < relations.length; i++) {
+                            $("#restaurant-category-add").before("<tr id=\"" + relations[i].id + "\">"
+                                  + "<td>" + (i + 1) + "</td>"
+                                  + "<td>" + relations[i].get("name") + "</td>"
+                                  + "<td>"
+                                      + "<button class=\"delete-category small\">Delete</button>"
+                                  + "</td>"
+                             + "</tr>");
+                        }
+                        
+                        self.initiateDelete(restaurant);
+                    },
+                    error: function (error) {
+                        var i = 0;
+                    }
+                });
             },
             newRestaurant: function () {
                 // $("#restaurant-icon").summernote(this.coverOption);
+            },
+            initiateDelete: function (restaurant) {
+                var self = this;
+                $(".delete-category").click(function () {
+                    var categoryId = $(this).parent().parent().attr("id");
+                    var Category = Parse.Object.extend("Category");
+                    var categoryQuery = new Parse.Query(Category);
+                    categoryQuery.get(categoryId, {
+                        success: function (category) {
+                            var relation = restaurant.relation("Category");
+                            relation.remove(category);
+                            restaurant.save();
+                            alert("Success");
+                            window.location.reload();
+                        },
+                        error: function (error) {
+                            alert("No Such Category");
+                        }
+                    });
+                });
             }
         }
     </script>
