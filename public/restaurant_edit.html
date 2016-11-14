@@ -249,7 +249,7 @@
             renderRestaurant: function (restaurant) {
                 var self = this;
                 
-                var fields = ["name", "category", "nickname", "address", "yelp", "phone"];
+                var fields = ["name", "category", "nickname", "address", "yelp", "phone", "voucher"];
                 for (var i in fields) {
                     var value = restaurant.get(fields[i]);
                     $("#restaurant-" + fields[i]).val(value);
