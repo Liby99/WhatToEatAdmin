@@ -267,22 +267,19 @@
                 // $("#restaurant-icon").summernote(this.coverOption);
             },
             initiateRelations: function (restaurant, callback) {
-                var relation = restaurant.relation("Category", {
-                    render: function (id) {
-                        return "<tr id=\"" + this.id + "\">"
-                                  + "<td>" + id + "</td>"
-                                  + "<td>" + this.get("name") + "</td>"
-                                  + "<td>"
-                                      + "<button class=\"delete-category small\">Delete</button>"
-                                  + "</td>"
-                             + "</tr>"
-                    }
-                });
+                var relation = restaurant.relation("Category");
                 var query = relation.query();
                 query.find({
                     success: function (relations) {
                         for (var i = 0; i < relations.length; i++) {
-                            $("#restaurant-category-add").before(relations[i].render(i + 1));
+                            var html = "<tr id=\"" + relations[i].id + "\">"
+                                          + "<td>" + id + "</td>"
+                                          + "<td>" + relations[i].get("name") + "</td>"
+                                          + "<td>"
+                                              + "<button class=\"delete-category small\">Delete</button>"
+                                          + "</td>"
+                                     + "</tr>";
+                            $("#restaurant-category-add").before(html);
                         }
                         callback();
                     },
