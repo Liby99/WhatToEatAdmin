@@ -40,48 +40,49 @@
             <% include view/sidebar.html %>
         </nav>
         <main>
-            <div id="main-title">New Restaurant</div>
+            <div id="main-title">编辑餐厅</div>
             <div id="main-frame">
                 <form id="restaurant-edit-form">
-                    <h3>Restaurant Information</h3>
-                    <label>Name: </label>
-                    <input id="restaurant-name" type="text" placeholder="Restaurant Name" />
-                    <label>Address: </label>
-                    <input id="restaurant-address" type="text" placeholder="Restaurant Address" />
-                    <label>Nickname: </label>
-                    <input id="restaurant-nickname" type="text" placeholder="Restaurant Nickname" />
-                    <label>Yelp: </label>
-                    <input id="restaurant-yelp" type="text" placeholder="Restaurant Yelp" />
-                    <label>Phone: </label>
-                    <input id="restaurant-phone" type="text" placeholder="Restaurant Phone" />
+                    <h3>餐厅信息</h3>
+                    <label>名称: </label>
+                    <input id="restaurant-name" type="text" placeholder="餐厅名称" />
+                    <label>地址: </label>
+                    <input id="restaurant-address" type="text" placeholder="餐厅地址" />
+                    <label>昵称: </label>
+                    <input id="restaurant-nickname" type="text" placeholder="餐厅昵称" />
+                    <label>Yelp URL: </label>
+                    <input id="restaurant-yelp" type="text" placeholder="餐厅 Yelp" />
+                    <label>电话: </label>
+                    <input id="restaurant-phone" type="text" placeholder="餐厅电话" />
                     <label>优惠信息: </label>
                     <input id="restaurant-voucher" type="text" placeholder="餐厅优惠信息（可留空）" />
                     <label>是合作商家: </label>
                     <div class="check" id="restaurant-is-collaborate" onclick="if ($(this).hasClass('active')) $(this).removeClass('active'); else $(this).addClass('active');">
                         <div class="check-inner"></div>
                     </div>
-                    <label>Cover Image: </label>
+                    <label>餐厅LOGO: </label>
                     <img id="restaurant-image-preview" src="" alt="当前没有图片" />
                     <input id="restaurant-image" type="file" accept="image/x-png" />
-                    <button type="reset">Reset</button>
-                    <button type="submit">Submit</button>
+                    <button type="reset">重置</button>
+                    <button type="submit">提交</button>
                 </form>
                 
                 <div id="add-category-div" hidden="hidden">
-                    <h3>Category Relation</h3>
+                    <h3>餐厅所属类别</h3>
+                    <p id="category-instruction">仅能添加已经在类别列表中记录过的类别。在这里删除类别仅会删除餐厅所属的类别，并不会影响这个类别在其他餐厅中的引用。如果要添加、编辑或删除类别，请到左边的餐厅类别管理页面中管理。</p>
                     <table id="restaurant-category-table">
                         <tr id="restaurant-category-table-head">
                             <th>ID</th>
-                            <th>Name</th>
-                            <th>Delete</th>
+                            <th>类别名称</th>
+                            <th>删除链接</th>
                         </tr>
                         <!-- Categories Goes Here -->
                         <tr id="restaurant-category-add">
                             <td></td>
                             <td>
                                 <form id="add-category-form">
-                                    <input type="text" id="add-category" placeholder="Add Category" />
-                                    <button type="submit" class="small">Add</button>
+                                    <input type="text" id="add-category" placeholder="添加类别" />
+                                    <button type="submit" class="small">添加</button>
                                 </form>
                             </td>
                             <td></td>
@@ -276,7 +277,7 @@
                                           + "<td>" + (i + 1) + "</td>"
                                           + "<td>" + relations[i].get("name") + "</td>"
                                           + "<td>"
-                                              + "<button class=\"delete-category small\">Delete</button>"
+                                              + "<button class=\"delete-category small\">删除</button>"
                                           + "</td>"
                                      + "</tr>";
                             $("#restaurant-category-add").before(html);

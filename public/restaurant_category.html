@@ -39,22 +39,24 @@
             <% include view/sidebar.html %>
         </nav>
         <main>
-            <div id="main-title">Manage Category</div>
+            <div id="main-title">管理类别</div>
             <div id="main-frame">
                 <table id="category-table">
                     <tr id="category-table-head">
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Delete</th>
+                        <th>类别名称</th>
+                        <th>编辑</th>
+                        <th>删除</th>
                     </tr>
                     <tr id="category-table-add">
                         <td></td>
                         <td>
                             <form id="category-add-form">
-                                <input type="text" id="add-category" placeholder="Add Category" autofocus />
-                                <button type="submit" class="small">Add</button>
+                                <input type="text" id="add-category" placeholder="添加类别" autofocus />
+                                <button type="submit" class="small">添加</button>
                             </form>
                         </td>
+                        <td></td>
                         <td></td>
                     </tr>
                 </table>
@@ -77,34 +79,44 @@
                 });
             },
             initiateEdit: function () {
+                var self = this;
+                
                 $(".editable").click(function () {
-                    var editable = this;
-                    var val = $(this).text();
-                    var id = $(this).parent().parent().attr("id");
-                    $(this).attr("hidden", "hidden");
-                    $(this).parent().append("<form id=\"" + id + "-name-form\"><input id=\"editing\" /><button class=\"category-edit small\" type=\"submit\">Submit</button></form>");
-                    $(editing).val(val);
-                    $("#" + id + "-name-form").submit(function () {
-                        var form = this;
-                        var Category = Parse.Object.extend("Category");
-                        var queryObject = new Parse.Query(Category);
-                        queryObject.get(id, {
-                            success: function (category) {
-                                var newValue = $("#editing").val();
-                                if (newValue != "") {
-                                    category.set("name", newValue);
-                                    category.save();
-                                    $(form).remove();
-                                    $(editable).text(newValue);
-                                    $(editable).removeAttr("hidden");
-                                }
-                            },
-                            error: function (error) {
-                                alert("Submission Failed");
+                    var editable = $(this);
+                    self.edit(editable);
+                });
+                
+                $(".category-edit").click(function () {
+                    var editable = $(this).parent().find(".editable");
+                    self.edit(editable);
+                });
+            },
+            edit: function (editable) {
+                var val = editable.text();
+                var id = editable.parent().parent().attr("id");
+                editable.attr("hidden", "hidden");
+                editable.parent().append("<form id=\"" + id + "-name-form\"><input id=\"editing\" /><button class=\"category-edit small\" type=\"submit\">Submit</button></form>");
+                $("#editing").val(val);
+                $("#" + id + "-name-form").submit(function () {
+                    var form = this;
+                    var Category = Parse.Object.extend("Category");
+                    var queryObject = new Parse.Query(Category);
+                    queryObject.get(id, {
+                        success: function (category) {
+                            var newValue = $("#editing").val();
+                            if (newValue != "") {
+                                category.set("name", newValue);
+                                category.save();
+                                $(form).remove();
+                                editable.text(newValue);
+                                editable.removeAttr("hidden");
                             }
-                        });
-                        return false;
+                        },
+                        error: function (error) {
+                            alert("Submission Failed");
+                        }
                     });
+                    return false;
                 });
             },
             initiateDelete: function () {
@@ -157,7 +169,10 @@
                                 + "<span class=\"editable\">" + this.get("name") + "</span>"
                             + "</td>"
                             + "<td>"
-                                + "<button class=\"category-delete small\">Delete</button>"
+                                + "<button class=\"category-edit small\">编辑</span>"
+                            + "</td>"
+                            + "<td>"
+                                + "<button class=\"category-delete small\">删除</button>"
                             + "</td>"
                         + "</tr>";
                     }

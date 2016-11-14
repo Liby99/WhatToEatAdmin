@@ -56,24 +56,27 @@
             },
             initiateDelete: function () {
                 $(".restaurant-delete").click(function () {
-                    var id = $(this).parent().parent().attr("id");
-                    var Restaurant = Parse.Object.extend("Restaurant");
-                    var queryObject = new Parse.Query(Restaurant);
-                    queryObject.get(id, {
-                        success: function (restaurant) {
-                            restaurant.destroy({
-                                success: function (restaurant) {
-                                    window.location.reload();
-                                },
-                                error: function () {
-                                    alert("Delete restaurant failed");
-                                }
-                            });
-                        },
-                        error: function (error) {
-                            alert("Error: " + JSON.stringify(error));
-                        }
-                    })
+                    var name = $(this).parent().parent().children(".nickname").text();
+                    if (confirm("您确定要删除 " + name + " 吗？")) {
+                        var id = $(this).parent().parent().attr("id");
+                        var Restaurant = Parse.Object.extend("Restaurant");
+                        var queryObject = new Parse.Query(Restaurant);
+                        queryObject.get(id, {
+                            success: function (restaurant) {
+                                restaurant.destroy({
+                                    success: function (restaurant) {
+                                        window.location.reload();
+                                    },
+                                    error: function () {
+                                        alert("Delete restaurant failed");
+                                    }
+                                });
+                            },
+                            error: function (error) {
+                                alert("Error: " + JSON.stringify(error));
+                            }
+                        });
+                    }
                 });
             },
             load: function (callback) {
@@ -82,16 +85,16 @@
                         return "<tr class=\"restaurant\" id=\"" + this.id + "\">"
                             + "<td>" + id + "</td>"
                             + "<td>" + this.get("name") + "</td>"
-                            + "<td>" + this.get("nickname") + "</td>"
+                            + "<td class=\"nickname\">" + this.get("nickname") + "</td>"
                             + "<td><a href=\"" + this.get("yelp") + "\">" + this.get("yelp") + "</a></td>"
                             + "<td>" + this.get("phone") + "</td>"
                             + "<td>" + (this.get("is_collaborate") == 1 ? "是" : "否") + "</td>"
                             + "<td>" + (this.has("voucher") && this.get("voucher") != "" ? "有" : "无") + "</td>"
                             + "<td>"
-                                + "<button class=\"restaurant-edit small\">Edit</button>"
+                                + "<button class=\"restaurant-edit small\">编辑</button>"
                             + "</td>"
                             + "<td>"
-                                + "<button class=\"restaurant-delete small\">Delete</button>"
+                                + "<button class=\"restaurant-delete small\">删除</button>"
                             + "</td>"
                         + "</tr>";
                     }
