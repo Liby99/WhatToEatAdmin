@@ -4,9 +4,9 @@ $(function () {
 
 var Page = {
     initiate: function () {
-        this.initiateSidebar();
         this.initiateParse();
         if (PAGE != "login") {
+            this.initiateSidebar();
             User.check();
         }
     },
@@ -29,32 +29,18 @@ var User = {
     },
     login: function (username, password) {
         Parse.User.logIn(username, password, {
-            // If the username and password matches
             success: function(user) {
-                alert('Welcome!');
                 window.location.href = "index.html";
             },
-            // If there is an error
             error: function(user, error) {
-                console.log(error);
+                alert(error);
             }
         });
     },
     logout: function () {
         if (confirm("Are You Sure You Want to Log Out?")) {
-            ajax({
-                url: "/ajax/handler?action=logout",
-                type: "get",
-                success: function (result) {
-                    var data = JSON.parse(result);
-                    if (data["error_code"] == 0) {
-                        window.location.href = "/admin/login.html";
-                    }
-                    else {
-                        alert(data["error_log"]);
-                    }
-                }
-            });
+            Parse.User.logOut();
+            window.location.href = "login.html";
         }
     }
 }
