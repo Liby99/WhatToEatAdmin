@@ -153,9 +153,7 @@
                 $("#restaurant-edit-form").submit(function () {
                     var data = {
                         "name": $("#restaurant-name").val(),
-                        "address": $("#restaurant-address").val(),
                         "nickname": $("#restaurant-nickname").val(),
-                        "yelp": $("#restaurant-yelp").val(),
                         "phone": $("#restaurant-phone").val()
                     };
                     
@@ -167,7 +165,9 @@
                     }
                     
                     data["voucher"] = $("#restaurant-voucher").val();
-                    data["is_collaborate"] = $("#restaurant-is-collaborate").hasClass("active") ? 1 : 0
+                    data["is_collaborate"] = $("#restaurant-is-collaborate").hasClass("active") ? 1 : 0;
+                    data["address"] = $("#restaurant-address").val();
+                    data["yelp"] = $("#restaurant-yelp").val();
                     
                     var Restaurant = Parse.Object.extend("Restaurant");
                     if (self.id) {
