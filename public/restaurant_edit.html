@@ -258,11 +258,12 @@
                 if (restaurant.get("is_collaborate")) {
                     $("#restaurant-is-collaborate").addClass("active");
                 }
-                $("#restaurant-image-preview").attr("src", restaurant.get("image")._url);
                 
                 this.initiateRelations(restaurant, function () {
                     self.initiateDelete(restaurant);
                 });
+                
+                $("#restaurant-image-preview").attr("src", restaurant.get("image")._url);
             },
             newRestaurant: function () {
                 // $("#restaurant-icon").summernote(this.coverOption);
