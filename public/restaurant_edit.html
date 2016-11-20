@@ -110,36 +110,41 @@
                 var self = this;
                 $("#add-category-form").submit(function () {
                     var val = $("#add-category").val();
-                    var Category = Parse.Object.extend("Category");
-                    var query = new Parse.Query(Category);
-                    query.matches("name", val);
-                    query.find({
-                        success: function (categories) {
-                            if (categories.length > 0) {
-                                var Restaurant = Parse.Object.extend("Restaurant");
-                                var query = new Parse.Query(Restaurant);
-                                query.get(self.id, {
-                                    success: function (restaurant) {
-                                        var relation = restaurant.relation('Category');
-                                        relation.add(categories[0]);
-                                        restaurant.save();
-                                        alert("Successfully Created Relation");
-                                        RestaurantEdit.clearCategoryInput();
-                                        RestaurantEdit.refreshCategory();
-                                    },
-                                    error: function (error) {
-                                        alert("Create Relation Failed");
-                                    }
-                                });
+                    if (val != "") {
+                        var Category = Parse.Object.extend("Category");
+                        var query = new Parse.Query(Category);
+                        query.matches("name", val);
+                        query.find({
+                            success: function (categories) {
+                                if (categories.length > 0) {
+                                    var Restaurant = Parse.Object.extend("Restaurant");
+                                    var query = new Parse.Query(Restaurant);
+                                    query.get(self.id, {
+                                        success: function (restaurant) {
+                                            var relation = restaurant.relation('Category');
+                                            relation.add(categories[0]);
+                                            restaurant.save();
+                                            alert("Successfully Created Relation");
+                                            RestaurantEdit.clearCategoryInput();
+                                            RestaurantEdit.refreshCategory();
+                                        },
+                                        error: function (error) {
+                                            alert("Create Relation Failed");
+                                        }
+                                    });
+                                }
+                                else {
+                                    alert("No Such Category");
+                                }
+                            },
+                            error: function (error) {
+                                var i = -1;
                             }
-                            else {
-                                alert("No Such Category");
-                            }
-                        },
-                        error: function (error) {
-                            var i = -1;
-                        }
-                    });
+                        });
+                    }
+                    else {
+                        alert("Please Insert Category");
+                    }
                     return false;
                 })
             },
@@ -184,6 +189,7 @@
                                             parseFile.save().then(function () {
                                                 
                                                 restaurant.set("image", parseFile);
+                                                restaurant.set("imageUpdateTime")
                                                 restaurant.save();
                                                 alert("Upload success!");
                                                 window.location.reload();
