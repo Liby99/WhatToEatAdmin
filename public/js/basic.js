@@ -6,6 +6,7 @@ var Page = {
     initiate: function () {
         this.initiateSidebar();
         this.initiateParse();
+        User.check();
     },
     initiateSidebar: function () {
         var file = location.pathname.substring(1);
@@ -18,6 +19,30 @@ var Page = {
 }
 
 var User = {
+    check: function () {
+        var currentUser = Parse.User.current();
+        if (!currentUser) {
+            window.location.href = "login.html";
+        }
+    },
+    login: function (username, password) {
+        var data = $(this).serializeArray(),
+            username = data[0].value,
+            password = data[1].value;
+     
+        // Call Parse Login function with those variables
+        Parse.User.logIn(username, password, {
+            // If the username and password matches
+            success: function(user) {
+                alert('Welcome!');
+                window.location.href = "index.html";
+            },
+            // If there is an error
+            error: function(user, error) {
+                console.log(error);
+            }
+        });
+    },
     logout: function () {
         if (confirm("Are You Sure You Want to Log Out?")) {
             ajax({

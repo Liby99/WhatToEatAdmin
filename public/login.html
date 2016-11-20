@@ -35,7 +35,7 @@
                 initiateFormSubmit: function () {
                     $("#login-form").submit(function () {
                         if ($("#username").val() != "" && $("#password").val() != "") {
-                            
+                            User.login($("#username").val(), $("#password").val())
                         }
                         else {
                             alert("请先输入用户名或密码");
