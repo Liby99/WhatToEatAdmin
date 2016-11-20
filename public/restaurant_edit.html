@@ -282,6 +282,7 @@
                 this.removeCategory();
                 this.initiateRelations(this.restaurant, function () {
                     self.initiateDelete(self.restaurant);
+                    $("body").animate({scrollTop: $("body").outerHeight()}, "fast");
                 });
             },
             removeCategory: function () {
