@@ -189,7 +189,7 @@
                                             parseFile.save().then(function () {
                                                 
                                                 restaurant.set("image", parseFile);
-                                                restaurant.set("imageUpdateTime")
+                                                restaurant.set("imageUpdateTime", (new Date()).toString());
                                                 restaurant.save();
                                                 alert("Upload success!");
                                                 window.location.reload();
