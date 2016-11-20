@@ -99,6 +99,7 @@
         });
         
         var RestaurantEdit = {
+            restaurant: undefined,
             id: undefined,
             initiate: function () {
                 this.initiateSubmit();
@@ -123,7 +124,8 @@
                                         relation.add(categories[0]);
                                         restaurant.save();
                                         alert("Successfully Created Relation");
-                                        window.location.reload();
+                                        RestaurantEdit.clearCategoryInput();
+                                        RestaurantEdit.refreshCategory();
                                     },
                                     error: function (error) {
                                         alert("Create Relation Failed");
@@ -137,8 +139,7 @@
                         error: function (error) {
                             var i = -1;
                         }
-                    })
-                    
+                    });
                     return false;
                 })
             },
@@ -250,6 +251,8 @@
             renderRestaurant: function (restaurant) {
                 var self = this;
                 
+                this.restaurant = restaurant;
+                
                 var fields = ["name", "category", "nickname", "address", "yelp", "phone", "voucher"];
                 for (var i in fields) {
                     var value = restaurant.get(fields[i]);
@@ -259,14 +262,30 @@
                     $("#restaurant-is-collaborate").addClass("active");
                 }
                 
+                var image = restaurant.get("image");
+                if (image) {
+                    $("#restaurant-image-preview").attr("src", image._url);
+                }
+                
                 this.initiateRelations(restaurant, function () {
                     self.initiateDelete(restaurant);
                 });
-                
-                $("#restaurant-image-preview").attr("src", restaurant.get("image")._url);
             },
             newRestaurant: function () {
                 // $("#restaurant-icon").summernote(this.coverOption);
+            },
+            clearCategoryInput: function () {
+                $("#add-category").val("");
+            },
+            refreshCategory: function () {
+                var self = this;
+                this.removeCategory();
+                this.initiateRelations(this.restaurant, function () {
+                    self.initiateDelete(self.restaurant);
+                });
+            },
+            removeCategory: function () {
+                $(".category").remove();
             },
             initiateRelations: function (restaurant, callback) {
                 var relation = restaurant.relation("Category");
@@ -274,7 +293,7 @@
                 query.find({
                     success: function (relations) {
                         for (var i = 0; i < relations.length; i++) {
-                            var html = "<tr id=\"" + relations[i].id + "\">"
+                            var html = "<tr class=\"category\" id=\"" + relations[i].id + "\">"
                                           + "<td>" + (i + 1) + "</td>"
                                           + "<td>" + relations[i].get("name") + "</td>"
                                           + "<td>"
