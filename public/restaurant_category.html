@@ -39,7 +39,7 @@
                     <tr id="category-table-head">
                         <th>ID</th>
                         <th>类别名称</th>
-                        <th>类别类别</th>
+                        <th>范畴</th>
                         <th>编辑</th>
                         <th>删除</th>
                     </tr>
@@ -47,14 +47,15 @@
                         <td></td>
                         <form id="category-add-form">
                         <td>
-                            <input type="text" id="add-category" placeholder="添加类别" autofocus />
-                            <button type="submit" class="small">添加</button>
+                            <input type="text" id="add-category-name" placeholder="类别" autofocus />
                         </td>
                         <td>
-                            
+                            <input type="text" id="add-category-type" placeholder="类型" />
+                        </td>
+                        <td>
+                            <button type="submit" class="small">添加</button>
                         </td>
                         </form>
-                        <td></td>
                         <td></td>
                     </tr>
                 </table>
@@ -89,7 +90,7 @@
                     self.edit(editable);
                 });
             },
-            edit: function (editable) {
+            edit: function (editables) {
                 var val = editable.text();
                 var id = editable.parent().parent().attr("id");
                 editable.attr("hidden", "hidden");
@@ -165,6 +166,9 @@
                             + "<td>" + (id + 1) + "</td>"
                             + "<td>"
                                 + "<span class=\"editable\">" + this.get("name") + "</span>"
+                            + "</td>"
+                            + "<td>"
+                                + "<span class=\"\">" + this.get("type") + "</span>"
                             + "</td>"
                             + "<td>"
                                 + "<button class=\"category-edit small\">编辑</span>"
