@@ -6,7 +6,9 @@ var Page = {
     initiate: function () {
         this.initiateSidebar();
         this.initiateParse();
-        User.check();
+        if (PAGE != "login") {
+            User.check();
+        }
     },
     initiateSidebar: function () {
         var file = location.pathname.substring(1);
@@ -14,7 +16,7 @@ var Page = {
     },
     initiateParse: function () {
         Parse.initialize("CSSA Parse Server");
-        Parse.serverURL = 'http://ucsdcssa.org:1337/parse'
+        Parse.serverURL = 'http://ucsdcssa.org:1337/parse';
     }
 }
 
@@ -26,11 +28,6 @@ var User = {
         }
     },
     login: function (username, password) {
-        var data = $(this).serializeArray(),
-            username = data[0].value,
-            password = data[1].value;
-     
-        // Call Parse Login function with those variables
         Parse.User.logIn(username, password, {
             // If the username and password matches
             success: function(user) {
