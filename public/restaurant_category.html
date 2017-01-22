@@ -90,7 +90,7 @@
             },
             initiateEditClick: function () {
                 var self = this;
-                $(".category-edit").click(function () {
+                $(".category-edit").bind("click", function () {
                     $(this).unbind("click");
                     var editable = $(this).parent().parent().find(".editable");
                     self.edit(editable);
@@ -116,7 +116,10 @@
                                 $(form).remove();
                                 editable.text(newValue);
                                 editable.removeAttr("hidden");
-                                self.initiateEditClick();
+                                $(form).find(".category-edit").bind("click", function () {
+                                    var editable = $(this).parent().parent().find(".editable");
+                                    self.edit(editable);
+                                });
                             }
                             else {
                                 alert("Please complete the form");
