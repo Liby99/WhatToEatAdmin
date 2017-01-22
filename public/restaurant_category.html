@@ -94,15 +94,15 @@
                 var val = editable.text();
                 var id = editable.parent().parent().attr("id");
                 editable.attr("hidden", "hidden");
-                editable.parent().append("<form id=\"" + id + "-name-form\"><input id=\"editing\" /><button class=\"category-edit small\" type=\"submit\">Submit</button></form>");
-                $("#editing").val(val);
+                editable.parent().append("<form id=\"" + id + "-name-form\"><input class=\"editing\" /><button class=\"category-edit small\" type=\"submit\">Submit</button></form>");
+                $("#" + id + " .editing").val(val);
                 $("#" + id + "-name-form").submit(function () {
                     var form = this;
                     var Category = Parse.Object.extend("Category");
                     var queryObject = new Parse.Query(Category);
                     queryObject.get(id, {
                         success: function (category) {
-                            var newValue = $("#editing").val();
+                            var newValue = $(this).find(".editing").val();
                             if (newValue != "") {
                                 category.set("name", newValue);
                                 category.save();
