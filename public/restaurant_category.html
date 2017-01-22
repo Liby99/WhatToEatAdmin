@@ -112,7 +112,7 @@
                             if (newValue && newValue != "") {
                                 category.set("name", newValue);
                                 category.save();
-                                $(form).find(".category-edit").attr("onclick", "CategoryManage.editClick(this)");
+                                $("#" + id + " .category-edit").attr("onclick", "CategoryManage.editClick(this)");
                                 $(form).remove();
                                 editable.text(newValue);
                                 editable.removeAttr("hidden");
