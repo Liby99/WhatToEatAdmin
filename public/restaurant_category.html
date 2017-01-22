@@ -78,19 +78,24 @@
                 });
             },
             initiateEdit: function () {
-                var self = this;
-                
+                this.initiateEditableClick();
+                this.initiateEditClick();
+            },
+            initiateEditableClick: function () {
                 $(".editable").click(function () {
                     var editable = $(this);
                     self.edit(editable);
                 });
-                
+            },
+            initiateEditClick: function () {
                 $(".category-edit").click(function () {
+                    $(this).click(false);
                     var editable = $(this).parent().parent().find(".editable");
                     self.edit(editable);
                 });
             },
             edit: function (editable) {
+                var self = this;
                 var val = editable.text();
                 var id = editable.parent().parent().attr("id");
                 editable.attr("hidden", "hidden");
@@ -109,6 +114,7 @@
                                 $(form).remove();
                                 editable.text(newValue);
                                 editable.removeAttr("hidden");
+                                self.initiateEditClick();
                             }
                         },
                         error: function (error) {
@@ -167,7 +173,7 @@
                         alert("Please complete the form");
                     }
                     return false;
-                })
+                });
             },
             load: function (callback) {
                 var Category = Parse.Object.extend("Category", {
@@ -202,7 +208,7 @@
                     error: function (error) {
                         alert("Error: " + JSON.stringify(error));
                     }
-                })
+                });
             }
         }
     </script>
