@@ -91,7 +91,7 @@
             initiateEditClick: function () {
                 var self = this;
                 $(".category-edit").click(function () {
-                    $(this).click(false);
+                    $(this).unbind(click);
                     var editable = $(this).parent().parent().find(".editable");
                     self.edit(editable);
                 });
