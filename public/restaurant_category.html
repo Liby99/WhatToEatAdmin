@@ -88,13 +88,13 @@
                     self.edit(editable);
                 });
             },
+            editClick: function () {
+                $(this).off("click");
+                var editable = $(this).parent().parent().find(".editable");
+                CategoryManage.edit(editable);
+            }
             initiateEditClick: function () {
-                var self = this;
-                $(".category-edit").bind("click", function () {
-                    $(this).unbind("click");
-                    var editable = $(this).parent().parent().find(".editable");
-                    self.edit(editable);
-                });
+                $(".category-edit").on("click", this.editClick);
             },
             edit: function (editable) {
                 var self = this;
@@ -116,10 +116,7 @@
                                 $(form).remove();
                                 editable.text(newValue);
                                 editable.removeAttr("hidden");
-                                $(form).find(".category-edit").bind("click", function () {
-                                    var editable = $(this).parent().parent().find(".editable");
-                                    self.edit(editable);
-                                });
+                                $(form).find(".category-edit").on("click", self.editClick);
                             }
                             else {
                                 alert("Please complete the form");
