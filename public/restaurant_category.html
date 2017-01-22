@@ -86,7 +86,7 @@
                 });
                 
                 $(".category-edit").click(function () {
-                    var editable = $(this).parent().find(".editable");
+                    var editable = $(this).parent().parent().find(".editable");
                     self.edit(editable);
                 });
             },
@@ -120,42 +120,52 @@
             },
             initiateDelete: function () {
                 $(".category-delete").click(function () {
-                    var id = $(this).parent().parent().attr("id");
-                    var Category = Parse.Object.extend("Category");
-                    var queryObject = new Parse.Query(Category);
-                    queryObject.get(id, {
-                        success: function (category) {
-                            category.destroy({
-                                success: function (category) {
-                                    window.location.reload();
-                                },
-                                error: function () {
-                                    alert("Delete category failed");
-                                }
-                            });
-                        },
-                        error: function (error) {
-                            alert("Error: " + JSON.stringify(error));
-                        }
-                    });
+                    var name = $(this).parent().parent().find(".name").text();
+                    if (confirm("你确定你想删除 " + name + " 类别吗")) {
+                        var id = $(this).parent().parent().attr("id");
+                        var Category = Parse.Object.extend("Category");
+                        var queryObject = new Parse.Query(Category);
+                        queryObject.get(id, {
+                            success: function (category) {
+                                category.destroy({
+                                    success: function (category) {
+                                        window.location.reload();
+                                    },
+                                    error: function () {
+                                        alert("Delete category failed");
+                                    }
+                                });
+                            },
+                            error: function (error) {
+                                alert("Error: " + JSON.stringify(error));
+                            }
+                        });
+                    }
                 });
             },
             initiateAdd: function () {
                 $("#category-add-form").submit(function () {
-                    var val = $("#add-category").val();
-                    var Category = Parse.Object.extend("Category");
-                    var category = new Category();
-                    category.save({
-                        "name": val
-                    }, {
-                        success: function (category) {
-                            alert("Successfully Added Category");
-                            window.location.reload();
-                        },
-                        error: function (error) {
-                            alert("Add Category Failed");
-                        }
-                    });
+                    var name = $("#add-category-name").val();
+                    var type = $("#add-category-type").val();
+                    if (name != "" && type != "") {
+                        var Category = Parse.Object.extend("Category");
+                        var category = new Category();
+                        category.save({
+                            "name": val,
+                            "type": type
+                        }, {
+                            success: function (category) {
+                                alert("Successfully Added Category");
+                                window.location.reload();
+                            },
+                            error: function (error) {
+                                alert("Add Category Failed");
+                            }
+                        });
+                    }
+                    else {
+                        alert("Please complete the form");
+                    }
                     return false;
                 })
             },
@@ -165,7 +175,7 @@
                         return "<tr class=\"category\" id=\"" + this.id + "\">"
                             + "<td>" + (id + 1) + "</td>"
                             + "<td>"
-                                + "<span class=\"editable\">" + this.get("name") + "</span>"
+                                + "<span class=\"name editable\">" + this.get("name") + "</span>"
                             + "</td>"
                             + "<td>"
                                 + "<span class=\"\">" + this.get("type") + "</span>"
