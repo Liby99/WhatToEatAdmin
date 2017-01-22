@@ -89,12 +89,12 @@
                 });
             },
             editClick: function () {
-                $(this).off("click");
+                $(this).attr("onclick", "");
                 var editable = $(this).parent().parent().find(".editable");
                 CategoryManage.edit(editable);
             },
             initiateEditClick: function () {
-                $(".category-edit").on("click", this.editClick);
+                $(".category-edit").attr("onclick", "CategoryManage.editClick()");
             },
             edit: function (editable) {
                 var self = this;
@@ -116,7 +116,7 @@
                                 $(form).remove();
                                 editable.text(newValue);
                                 editable.removeAttr("hidden");
-                                $(form).find(".category-edit").on("click", self.editClick);
+                                $(form).find(".category-edit").attr("onclick", "CategoryManage.editClick()");
                             }
                             else {
                                 alert("Please complete the form");
