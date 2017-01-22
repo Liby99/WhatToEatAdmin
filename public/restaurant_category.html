@@ -109,14 +109,17 @@
                     var queryObject = new Parse.Query(Category);
                     queryObject.get(id, {
                         success: function (category) {
-                            var newValue = $(this).find(".editing").val();
-                            if (newValue != "") {
+                            var newValue = $(form).find(".editing").val();
+                            if (newValue && newValue != "") {
                                 category.set("name", newValue);
                                 category.save();
                                 $(form).remove();
                                 editable.text(newValue);
                                 editable.removeAttr("hidden");
                                 self.initiateEditClick();
+                            }
+                            else {
+                                alert("Please complete the form");
                             }
                         },
                         error: function (error) {
