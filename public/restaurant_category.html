@@ -82,12 +82,14 @@
                 this.initiateEditClick();
             },
             initiateEditableClick: function () {
+                var self = this;
                 $(".editable").click(function () {
                     var editable = $(this);
                     self.edit(editable);
                 });
             },
             initiateEditClick: function () {
+                var self = this;
                 $(".category-edit").click(function () {
                     $(this).click(false);
                     var editable = $(this).parent().parent().find(".editable");
