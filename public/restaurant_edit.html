@@ -184,7 +184,6 @@
                                             var name = "photo.jpg";
                                             var parseFile = new Parse.File(name, file);
                                             parseFile.save().then(function () {
-                                                
                                                 restaurant.set("image", parseFile);
                                                 restaurant.set("imageUpdateTime", (new Date()).toString());
                                                 restaurant.save();
