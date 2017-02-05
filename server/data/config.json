@@ -13,6 +13,6 @@
         "/src",
         "/view"
     ],
-    "parse_address": "https://ucsdcssa.org:1337/parse",
+    "parse_address": "localhost:1337",
     "parse_app_id": "CSSA Parse Server"
 }
