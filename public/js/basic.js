@@ -15,7 +15,7 @@ var Page = {
         $("#href-" + PAGE).addClass("active");
     },
     initiateParse: function () {
-        Parse.initialize("CSSA Parse Server");
+        Parse.initialize("CSSA_Parse_Server");
         Parse.serverURL = 'https://parse.ucsdcssa.org/parse';
     }
 }
